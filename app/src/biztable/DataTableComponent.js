@@ -15,7 +15,7 @@ import {
 export default function DataTable({ columns, rows, loading }) {
   return (
     <Paper sx={{ width: "100%", overflow: "auto" }}>
-      <TableContainer sx={{ maxHeight: 550 }}>
+      <TableContainer sx={{ maxHeight: 750 }}>
         <Table stickyHeader>
           <TableHead>
             <TableRow>

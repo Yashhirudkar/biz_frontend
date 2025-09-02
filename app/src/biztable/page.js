@@ -5,6 +5,7 @@ import axios from "axios";
 import { Container, Box, TablePagination } from "@mui/material";
 import Filter from "./FilterComponent";
 import DataTable from "./DataTableComponent";
+import { WidthFull } from "@mui/icons-material";
 
 export default function Mainpage() {
   const [rows, setRows] = useState([]);
@@ -12,7 +13,7 @@ export default function Mainpage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [error, setError] = useState("");
-  const limit = 7;
+  const limit = 10;
 
   const [search, setSearch] = useState("");
   const [industry, setIndustry] = useState("");
@@ -61,7 +62,7 @@ export default function Mainpage() {
         setTotalPages(1);
       }
     } catch (err) {
-      console.error("Error fetching data:", err.response?.data || err.message);
+      // console.error("Error fetching data:", err.response?.data || err.message);
       setRows([]);
       setTotalPages(1);
       setError(err.response?.data?.message || "Failed to fetch data");
@@ -102,7 +103,7 @@ export default function Mainpage() {
   }, [rows]);
 
   return (
-    <Container maxWidth="xl">
+    <Box sx={{ px: 4, width: "100%" }}>
       <Box sx={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
         {/* Filter */}
         <Box sx={{ mt: { xs: 2, md: 15 } }}>
@@ -116,7 +117,7 @@ export default function Mainpage() {
         </Box>
 
         {/* DataTable */}
-        <Box sx={{ flex: 1, minWidth: 0, mt: { xs: 4, md: 12 } }}>
+        <Box sx={{ flex: 1, minWidth: 0, mt: { xs: 4, md: 16 } }}>
           <DataTable columns={columns} rows={rows} loading={loading} />
 
           {/* Pagination OUTSIDE table */}
@@ -135,6 +136,6 @@ export default function Mainpage() {
           </Box>
         </Box>
       </Box>
-    </Container>
+    </Box>
   );
 }
