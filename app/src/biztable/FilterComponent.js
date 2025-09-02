@@ -201,6 +201,7 @@ export default function Filter({ fields = [], onApply, onClear, loading, error }
               onChange={(e) => field.setValue(e.target.value)}
               disabled={loading}
               fullWidth
+              size="small"
             />
           );
         }
