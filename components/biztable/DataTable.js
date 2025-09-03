@@ -16,7 +16,7 @@ import { styled } from "@mui/material/styles";
 
 // Styled component for custom scrollbar
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
-  maxHeight: 570,
+  height: "calc(100vh - 180px)", // adjust offset for header/footer
   "&::-webkit-scrollbar": {
     width: "10px",
     height: "10px",
@@ -50,7 +50,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 export default function DataTable({ columns, rows, loading, page = 1, rowsPerPage = 10 }) {
-  // Hide unwanted columns // 
+  // Hide unwanted columns
   const hiddenColumns = ["id", "minEmployeeSize", "maxEmployeeSize"];
   const visibleColumns = columns.filter((col) => !hiddenColumns.includes(col.id));
 
@@ -58,7 +58,9 @@ export default function DataTable({ columns, rows, loading, page = 1, rowsPerPag
     <Paper
       sx={{
         width: "100%",
-        overflow: "hidden",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
         borderRadius: "8px",
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
       }}
@@ -67,7 +69,6 @@ export default function DataTable({ columns, rows, loading, page = 1, rowsPerPag
         <Table stickyHeader size="small">
           <TableHead>
             <TableRow>
-              {/* Serial No column */}
               <StyledTableCell>S.No</StyledTableCell>
               {visibleColumns.map((column) => (
                 <StyledTableCell key={column.id} sx={{ minWidth: column.minWidth }}>
@@ -97,12 +98,9 @@ export default function DataTable({ columns, rows, loading, page = 1, rowsPerPag
                     },
                   }}
                 >
-                  {/* Serial Number */}
                   <TableCell sx={{ padding: "8px", fontSize: "13.5px" }}>
                     {(page - 1) * rowsPerPage + idx + 1}
                   </TableCell>
-
-                  {/* Visible columns only */}
                   {visibleColumns.map((column) => (
                     <TableCell
                       key={column.id}
