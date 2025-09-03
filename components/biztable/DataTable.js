@@ -50,7 +50,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 export default function DataTable({ columns, rows, loading, page = 1, rowsPerPage = 10 }) {
-  // Hide unwanted columns
+  // Hide unwanted columns // 
   const hiddenColumns = ["id", "minEmployeeSize", "maxEmployeeSize"];
   const visibleColumns = columns.filter((col) => !hiddenColumns.includes(col.id));
 
