@@ -2,33 +2,48 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
-import { Container, Box, TablePagination } from "@mui/material";
-import Filter from "./FilterComponent";
-import DataTable from "./DataTableComponent";
-import { WidthFull } from "@mui/icons-material";
+import { Box, Pagination } from "@mui/material";
+import Filter from "../../components/biztable/Filter";
+import DataTable from "../../components/biztable/DataTable";
+import { useRouter } from "next/navigation";
 
 export default function Mainpage() {
+  const router = useRouter();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
   const [error, setError] = useState("");
   const limit = 10;
 
+  // Filters
   const [search, setSearch] = useState("");
   const [industry, setIndustry] = useState("");
   const [country, setCountry] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [minEmployeeSize, setMinEmployeeSize] = useState("");
   const [maxEmployeeSize, setMaxEmployeeSize] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [filtersCollapsed, setFiltersCollapsed] = useState(false);
+
+  // Check for token on component mount
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      router.push("/login");
+    }
+  }, [router]);
 
   const filterFields = [
-    { label: "Search", value: search, setValue: setSearch },
     { label: "Industry", value: industry, setValue: setIndustry },
     { label: "Country", value: country, setValue: setCountry },
     { label: "Job Title", value: jobTitle, setValue: setJobTitle },
     { label: "Min Employee Size", value: minEmployeeSize, setValue: setMinEmployeeSize },
     { label: "Max Employee Size", value: maxEmployeeSize, setValue: setMaxEmployeeSize },
+    { label: "First Name", value: firstName, setValue: setFirstName },
+    { label: "Last Name", value: lastName, setValue: setLastName },
   ];
 
   // Fetch data from API
@@ -46,7 +61,9 @@ export default function Mainpage() {
           industry: industry.trim(),
           title: jobTitle.trim(),
           minEmployeeSize: minEmployeeSize.trim(),
-          maxEmployeeSize: maxEmployeeSize.trim()
+          maxEmployeeSize: maxEmployeeSize.trim(),
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
         },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
@@ -57,14 +74,21 @@ export default function Mainpage() {
       if (res.status === 200 && Array.isArray(res.data.data)) {
         setRows(res.data.data);
         setTotalPages(res.data.totalPages || 1);
+        setTotalRecords(res.data.totalRecords || res.data.data.length);
       } else {
         setRows([]);
         setTotalPages(1);
+        setTotalRecords(0);
       }
     } catch (err) {
-      // console.error("Error fetching data:", err.response?.data || err.message);
+      if (err.response?.status === 401) {
+        localStorage.removeItem("authToken");
+        router.push("/login");
+        return;
+      }
       setRows([]);
       setTotalPages(1);
+      setTotalRecords(0);
       setError(err.response?.data?.message || "Failed to fetch data");
     } finally {
       setLoading(false);
@@ -87,8 +111,14 @@ export default function Mainpage() {
     setJobTitle("");
     setMinEmployeeSize("");
     setMaxEmployeeSize("");
+    setFirstName("");
+    setLastName("");
     setPage(1);
     fetchData();
+  };
+
+  const handleCollapseChange = (collapsed) => {
+    setFiltersCollapsed(collapsed);
   };
 
   const columns = useMemo(() => {
@@ -103,35 +133,48 @@ export default function Mainpage() {
   }, [rows]);
 
   return (
-    <Box sx={{ px: 4, width: "100%" }}>
-      <Box sx={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+    <Box sx={{ px: 2, width: "100%" }}>
+      <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
         {/* Filter */}
-        <Box sx={{ mt: { xs: 2, md: 15 } }}>
+        <Box sx={{ mt: { xs: 2, md: 10 } }}>
           <Filter
             fields={filterFields}
             onApply={handleApply}
             onClear={handleClear}
             loading={loading}
             error={error}
+            onCollapseChange={handleCollapseChange}
           />
         </Box>
 
         {/* DataTable */}
-        <Box sx={{ flex: 1, minWidth: 0, mt: { xs: 4, md: 16 } }}>
-          <DataTable columns={columns} rows={rows} loading={loading} />
+        <Box sx={{ flex: 1, minWidth: 0, mt: { xs: 4, md: 10 } }}>
+          <DataTable
+            columns={columns}
+            rows={rows}
+            loading={loading}
+            page={page}
+            rowsPerPage={10}
+          />
 
           {/* Pagination OUTSIDE table */}
-          <Box display="flex" justifyContent="center" mt={1}>
-            <TablePagination
-              component="div"
-              count={totalPages * limit} // total records
-              page={page - 1} // 0-indexed
-              onPageChange={(e, newPage) => setPage(newPage + 1)}
-              rowsPerPage={limit}
-              rowsPerPageOptions={[]} // hide rows-per-page selector
-              labelDisplayedRows={({ from, to, count }) =>
-                `${from}-${to} of ${count}`
-              }
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            mt={1}
+            gap={1}
+            mb={0}
+          >
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={(e, value) => setPage(value)}
+              variant="outlined"
+              shape="rounded"
+              siblingCount={1}
+              boundaryCount={1}
+              color="primary"
             />
           </Box>
         </Box>

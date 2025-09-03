@@ -1,7 +1,7 @@
 // app/layout.js
 import { Geist, Geist_Mono } from "next/font/google";
 import { CssBaseline } from "@mui/material";
-import NavBar from "./src/components/navbar";
+import NavBar from "../components/Navbar";
 
 // Load Google Fonts
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });

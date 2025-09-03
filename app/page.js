@@ -1,4 +1,4 @@
-import Mainpage from './src/biztable/page';
+import Mainpage from './biztable/page';
 
 export default function Home() {
   return <Mainpage />; // Add return statement

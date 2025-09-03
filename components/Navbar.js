@@ -88,7 +88,7 @@ export default function NavBar({ username = 'John Doe' }) {
           <Image
             src="/bizprospex.png"
             alt="Logo"
-            width={150}
+            width={120}
             height={50}
             style={{ cursor: 'pointer', height: 'auto', width: 'auto' }}
             priority

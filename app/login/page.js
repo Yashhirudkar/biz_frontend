@@ -57,7 +57,7 @@ export default function LoginPage() {
 localStorage.setItem("authToken",data.authToken)
       if (response.ok) {
         console.log("✅ Login successful, cookie should be set");
-        router.push("/src/biztable"); // redirect to your protected page
+        router.push("/"); // redirect to your protected page
       } else {
         setErrors({ general: data.message || "Invalid credentials" });
       }
