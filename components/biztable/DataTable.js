@@ -16,7 +16,8 @@ import { styled } from "@mui/material/styles";
 
 // Styled component for custom scrollbar
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
-  height: "calc(100vh - 180px)", // adjust offset for header/footer
+  flex: 1, // ✅ let it grow to fill available space
+  minHeight: 0, // ✅ prevents overflow issues
   "&::-webkit-scrollbar": {
     width: "10px",
     height: "10px",
@@ -49,16 +50,24 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 
-export default function DataTable({ columns, rows, loading, page = 1, rowsPerPage = 10 }) {
+export default function DataTable({
+  columns,
+  rows,
+  loading,
+  page = 1,
+  rowsPerPage = 10,
+}) {
   // Hide unwanted columns
   const hiddenColumns = ["id", "minEmployeeSize", "maxEmployeeSize"];
-  const visibleColumns = columns.filter((col) => !hiddenColumns.includes(col.id));
+  const visibleColumns = columns.filter(
+    (col) => !hiddenColumns.includes(col.id)
+  );
 
   return (
     <Paper
       sx={{
         width: "100%",
-        height: "100%",
+        height: "calc(107vh - 180px)", // ✅ responsive height relative to screen
         display: "flex",
         flexDirection: "column",
         borderRadius: "8px",
@@ -71,7 +80,10 @@ export default function DataTable({ columns, rows, loading, page = 1, rowsPerPag
             <TableRow>
               <StyledTableCell>S.No</StyledTableCell>
               {visibleColumns.map((column) => (
-                <StyledTableCell key={column.id} sx={{ minWidth: column.minWidth }}>
+                <StyledTableCell
+                  key={column.id}
+                  sx={{ minWidth: column.minWidth }}
+                >
                   {column.label}
                 </StyledTableCell>
               ))}
@@ -80,7 +92,11 @@ export default function DataTable({ columns, rows, loading, page = 1, rowsPerPag
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={visibleColumns.length + 1} align="center" sx={{ py: 3 }}>
+                <TableCell
+                  colSpan={visibleColumns.length + 1}
+                  align="center"
+                  sx={{ py: 3 }}
+                >
                   <CircularProgress />
                 </TableCell>
               </TableRow>
@@ -107,6 +123,8 @@ export default function DataTable({ columns, rows, loading, page = 1, rowsPerPag
                       sx={{
                         padding: "8px",
                         fontSize: "13.5px",
+                        whiteSpace: "normal", // ✅ allow wrapping
+                        wordBreak: "break-word", // ✅ break long URLs
                       }}
                     >
                       {row[column.id] || "-"}
@@ -116,8 +134,18 @@ export default function DataTable({ columns, rows, loading, page = 1, rowsPerPag
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={visibleColumns.length + 1} align="center" sx={{ py: 2 }}>
-                  <Box sx={{ color: "text.secondary", fontStyle: "italic", fontSize: "14px" }}>
+                <TableCell
+                  colSpan={visibleColumns.length + 1}
+                  align="center"
+                  sx={{ py: 2 }}
+                >
+                  <Box
+                    sx={{
+                      color: "text.secondary",
+                      fontStyle: "italic",
+                      fontSize: "14px",
+                    }}
+                  >
                     No data found
                   </Box>
                 </TableCell>
